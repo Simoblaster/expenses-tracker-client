@@ -7,6 +7,7 @@ import { accountService, alertService } from '@/_services';
 
 function Register({ history }) {
     const initialValues = {
+        currency: '',
         title: '',
         firstName: '',
         lastName: '',
@@ -17,6 +18,8 @@ function Register({ history }) {
     };
 
     const validationSchema = Yup.object().shape({
+        currency: Yup.string()
+        .required('Currency is required'),
         title: Yup.string()
             .required('Title is required'),
         firstName: Yup.string()
@@ -94,6 +97,13 @@ function Register({ history }) {
                                 <Field name="confirmPassword" type="password" className={'form-control' + (errors.confirmPassword && touched.confirmPassword ? ' is-invalid' : '')} />
                                 <ErrorMessage name="confirmPassword" component="div" className="invalid-feedback" />
                             </div>
+                            <div className="form-group col">
+                            <label htmlFor="currency">Currency</label>
+                            <Field as="select" name="currency" id="currency" className={'form-control' + (errors.title && touched.title ? ' is-invalid' : '')}>
+                                <option value="$">$</option>
+                                <option value="€">€</option>
+                            </Field>
+                        </div>
                         </div>
                         <div className="form-group form-check">
                             <Field type="checkbox" name="acceptTerms" id="acceptTerms" className={'form-check-input ' + (errors.acceptTerms && touched.acceptTerms ? ' is-invalid' : '')} />
