@@ -9,10 +9,13 @@ import {
   faArrowLeft,
   faArrowRight,
   faPencil,
-  faTrash
+  faTrash,
+  faTimes
 } from "@fortawesome/free-solid-svg-icons";
 import Moment from "react-moment";
 import moment from 'moment'
+import { Modal, Button } from 'react-bootstrap';
+import { Formik, Field, Form, ErrorMessage } from 'formik';
 
 function Home() {
   const user = accountService.userValue;
@@ -24,7 +27,29 @@ function Home() {
   const [monthlyBalance, setMonthlyBalance] = useState(0);
 
   const [date, setDate] = useState();
-  // const [listByMonth, setListByMonth] = useState([]);
+
+  const [show1, setShow1] = useState(false);
+  const [show2, setShow2] = useState(false);
+  const [transactionModal, setTransactionModal] = useState({});
+  const [transactionType, setTransactionType] = useState({});
+  const [transactionToSave, setTransactionToSave] = useState({});
+  
+  const handleClose1 = () => {
+    setShow1(false);
+    setTransactionModal({});
+  };
+  const handleShow1 = (trx) => {
+    setShow1(true);
+    setTransactionModal(trx);
+  };
+  const handleClose2 = () => {
+    setShow2(false);
+    setTransactionModal({});
+  };
+  const handleShow2 = (trx) => {
+    setShow2(true);
+    setTransactionModal(trx);
+  };
 
   useEffect(() => {
     console.log('useEffect') // DEBUG
@@ -157,8 +182,178 @@ function Home() {
 //     }
 //   };
 
+// function saveTrx(event) {
+//   console.log('event', event);
+//   if (transactionModal) {
+//     console.log('update');
+//   } else {
+//     console.log('new');
+//   }
+//   // handleClose1();
+//   event.preventDefaul();
+// }
+
+  const saveTrx = (event) => {
+
+    event.preventDefault();
+
+    // console.log('transactionToSave', transactionToSave)
+
+    if (transactionModal && transactionModal.id) {
+
+      console.log('update'); // DEBUG
+
+    } else {
+
+      console.log('new'); // DEBUG
+
+    }
+
+    handleClose1();
+
+   }
+
+   const handleForm = (e) => {
+
+     let trx = {};
+
+     if (transactionModal) {
+       trx = {
+         id: transactionModal.id,
+         userId: transactionModal.userId,
+         createdAt: transactionModal.createdAt,
+         value: transactionModal.value,
+         type: transactionModal.type,
+         categoryId: transactionModal.categoryId,
+       };
+     } else {
+       trx = {
+         value: null,
+         type: null,
+         categoryId: null,
+       };
+     }
+
+     switch (e.target.name) {
+       case "value":
+         trx["value"] = e.target.value;
+         break;
+       case "type":
+         trx["type"] = e.target.value;
+         break;
+       case "categoryId":
+         trx["categoryId"] = e.target.value;
+         break;
+       default:
+         break;
+     }
+     setTransactionModal(trx);
+   };
+   
+
+function updateTransactionModal() {
+  return (
+    <Modal show={show1} onHide={handleClose1}>
+      <form onSubmit={saveTrx}>
+        <Modal.Header>
+          <Modal.Title>
+            {transactionModal && transactionModal.id ? (
+              <div>Update Transaction</div>
+            ) : (
+              <div>New Transaction</div>
+            )}
+          </Modal.Title>
+          <Button variant="info" onClick={handleClose1}>
+            <FontAwesomeIcon icon={faTimes} />
+          </Button>
+        </Modal.Header>
+        <Modal.Body>
+          {transactionModal && transactionModal.id ? (
+            <div>
+              <div>
+                <input onChange={handleForm} className="form-control" name="value" type="number" step=".01" min="0" value={transactionModal.value} />
+              </div>
+              <div>
+                <select onChange={handleForm} className="form-control" name="type" value={transactionModal.type} >
+                  <option value="expense">Expense</option>
+                  <option value="income">Income</option>
+                </select>
+              </div>
+              <div>
+                <select onChange={handleForm} className="form-control" name="categoryId" value={transactionModal.categoryId} >
+                  <option value="1">Cat Test 1</option>
+                  <option value="2">Cat Test 2</option>
+                  <option value="3">Cat Test 3</option>
+                </select>
+              </div>
+            </div>
+           ) : (
+            <div>
+              {/* todo manage new */}
+              <div>
+                <input onChange={handleForm} className="form-control" name="value" type="number" step=".01" min="0" />
+              </div>
+              <div>
+                <select onChange={handleForm} className="form-control" name="type" >
+                  <option value="expense">Expense</option>
+                  <option value="income">Income</option>
+                </select>
+              </div>
+              <div>
+                <select onChange={handleForm} className="form-control" name="categoryId" >
+                  <option value="1">Cat Test 1</option>
+                  <option value="2">Cat Test 2</option>
+                  <option value="3">Cat Test 3</option>
+                </select>
+              </div>
+            </div>
+           )
+           }
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="info" onClick={handleClose1}>
+            Close
+          </Button>
+          <Button type="submit" variant="success">
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </form>
+    </Modal>
+  );
+}
+
+function deleteTransactionModal() {
+  return (
+    // <Modal show={show2} onHide={handleClose2}>
+    //   <Modal.Header>
+    //     <Modal.Title>
+    //       {transactionModal.id}
+    //     </Modal.Title>
+    //     <Button variant="info" onClick={handleClose2}>
+    //       <FontAwesomeIcon icon={faTimes} />
+    //     </Button>
+    //   </Modal.Header>
+    //   <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
+    //   <Modal.Footer>
+    //     <Button variant="info" onClick={handleClose2}>
+    //       Close
+    //     </Button>
+    //     <Button variant="success" onClick={handleClose2}>
+    //       Save Changes
+    //     </Button>
+    //   </Modal.Footer>
+    // </Modal>
+    <div>
+      asd
+    </div>
+  );
+}
+
   return (
     <div className="p-4">
+      {updateTransactionModal()}
+      {deleteTransactionModal()}
       <div className="container-fluid">
         {/* <div onClick={createTransaction}>test trx</div> */}
         {transactions.length === 0 ? (
@@ -172,49 +367,44 @@ function Home() {
             <div className="col-12">
               <div className="row mb-4">
                 <h2 className="col-12 col-md-6 text-center text-md-left mb-4 mb-md-0">
-                  Montly balance: {" "}
-                  {
-                    monthlyBalance === 0 ? (
-                      <span>
-                        ${monthlyBalance.toFixed(2)}
-                      </span>
-                    ) :
-                    monthlyBalance > 0 ? (
-                      <span className="color-green">
-                        ${monthlyBalance.toFixed(2)}
-                      </span>
-                    ) :
-                    monthlyBalance < 0 ? (
-                      <span className="color-red">
-                        ${monthlyBalance.toFixed(2)}
-                      </span>
-                    ) : 
-                    null
-                  }
+                  Montly balance:{" "}
+                  {monthlyBalance === 0 ? (
+                    <span>${monthlyBalance.toFixed(2)}</span>
+                  ) : monthlyBalance > 0 ? (
+                    <span className="color-green">
+                      ${monthlyBalance.toFixed(2)}
+                    </span>
+                  ) : monthlyBalance < 0 ? (
+                    <span className="color-red">
+                      ${monthlyBalance.toFixed(2)}
+                    </span>
+                  ) : null}
                 </h2>
                 <div className="col-12 col-md-6 text-center text-md-right">
-                  <button className="btn btn-danger mr-3">New expense</button>{" "}
-                  <button className="btn btn-success ml-3">New income</button>
+                  <button onClick={() => handleShow1()} className="btn btn-danger mr-3">New expense</button>{" "}
+                  <button onClick={() => handleShow1()} className="btn btn-success ml-3">New income</button>
                 </div>
               </div>
               <div className="row">
                 <h2 className="col-12 mb-4">
                   <div className="row">
                     <div className="col text-right m-auto">
-                      <button className="btn btn-info" onClick={() => onSwitchMonth("-")}>
-                        <FontAwesomeIcon
-                          icon={faArrowLeft}
-                        />
+                      <button
+                        className="btn btn-info"
+                        onClick={() => onSwitchMonth("-")}
+                      >
+                        <FontAwesomeIcon icon={faArrowLeft} />
                       </button>
                     </div>
                     <div className="col-2 text-center">
                       {date.format("MMMM yyyy")}
                     </div>
                     <div className="col text-left m-auto">
-                      <button className="btn btn-info" onClick={() => onSwitchMonth("+")}>
-                        <FontAwesomeIcon
-                          icon={faArrowRight}
-                        />
+                      <button
+                        className="btn btn-info"
+                        onClick={() => onSwitchMonth("+")}
+                      >
+                        <FontAwesomeIcon icon={faArrowRight} />
                       </button>
                     </div>
                   </div>
@@ -222,7 +412,9 @@ function Home() {
                 <div className="col-12 col-md-6">
                   <div className="card bg-light mb-3">
                     <div className="card-header">
-                      <h3 className="color-red text-center">Expenses ${expensesBalance}</h3>
+                      <h3 className="color-red text-center">
+                        Expenses ${expensesBalance}
+                      </h3>
                     </div>
                     <div className="card-body scrollable-card-content">
                       {expenses.length > 0 ? (
@@ -244,10 +436,10 @@ function Home() {
                               {user.currency + expense.value}
                             </div>
                             <div className="col m-auto text-right">
-                              <button className="btn btn-info mr-3">
+                              <button onClick={() => {handleShow1(expense)}} className="btn btn-info mr-3">
                                 <FontAwesomeIcon icon={faPencil} />
                               </button>
-                              <button className="btn btn-danger">
+                              <button onClick={() => handleShow2(expense)} className="btn btn-danger">
                                 <FontAwesomeIcon icon={faTrash} />
                               </button>
                             </div>
@@ -257,7 +449,7 @@ function Home() {
                         <div>
                           <div>No expenses recorded for this month</div>
                           <div>
-                            <button className="btn btn-danger mr-3">
+                            <button onClick={() => handleShow1()} className="btn btn-danger mr-3">
                               New expense
                             </button>
                           </div>
@@ -269,7 +461,9 @@ function Home() {
                 <div className="col-12 col-md-6">
                   <div className="card bg-light mb-3">
                     <div className="card-header">
-                      <h3 className="color-green text-center">Incomes ${incomesBalance}</h3>
+                      <h3 className="color-green text-center">
+                        Incomes ${incomesBalance}
+                      </h3>
                     </div>
                     <div className="card-body scrollable-card-content">
                       {incomes.length > 0 ? (
@@ -291,10 +485,10 @@ function Home() {
                               {user.currency + income.value}
                             </div>
                             <div className="col m-auto text-right">
-                              <button className="btn btn-info mr-3">
+                              <button onClick={() => handleShow1(income)} className="btn btn-info mr-3">
                                 <FontAwesomeIcon icon={faPencil} />
                               </button>
-                              <button className="btn btn-danger">
+                              <button onClick={() => handleShow2(income)} className="btn btn-danger">
                                 <FontAwesomeIcon icon={faTrash} />
                               </button>
                             </div>
@@ -304,7 +498,7 @@ function Home() {
                         <div>
                           <div>No incomes recorded for this month</div>
                           <div>
-                            <button className="btn btn-success ml-3">
+                            <button onClick={() => handleShow1()} className="btn btn-success ml-3">
                               New income
                             </button>
                           </div>
